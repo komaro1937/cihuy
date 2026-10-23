@@ -1,12 +1,10 @@
-const _sysToken = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
-const _endpointX = atob(_sysToken); 
 const form = document.forms['submit-to-google-sheet'];
 const elemenTotalUang = document.getElementById('total-uang');
+const _sysToken = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
 const inputfile = document.getElementById('file-bukti');
-
-// Target Kelas (Rp 15.200.000)
+const _endpointX = atob(_sysToken); 
 const targetBiaya = 15200000; 
 
 inputfile.addEventListener('change', function(e) {
