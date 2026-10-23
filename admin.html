@@ -27,18 +27,39 @@
     </div>
   </section>
 
-  <!-- BAGIAN 2: DASHBOARD VERIFIKASI -->
+  <!-- BAGIAN 2: DASHBOARD VERIFIKASI & INPUT CASH -->
   <section id="admin-dashboard" class="hidden">
-    <header style="padding: 20px; margin-bottom: 20px;">
-      <h2>Panel Bendahara - Verifikasi Setoran</h2>
-      <p>Periksa bukti transfer mahasiswa dan lakukan ACC atau Tolak.</p>
+    <header style="padding: 20px; margin-bottom: 10px;">
+      <h2>Panel Bendahara</h2>
+      <p>Kelola setoran transfer maupun tunai dari mahasiswa.</p>
     </header>
 
+    <!-- FITUR INPUT CASH KHUSUS BENDAHARA -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin: 0 20px 20px 20px;">
+      <h3 style="margin-top: 0; color: #0f172a;"><span class="iconify" data-icon="mdi:cash-multiple"></span> Catat Setoran Tunai (Cash)</h3>
+      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Catat mahasiswa yang bayar kas langsung di kampus. Datanya otomatis Lunas.</p>
+      
+      <form id="form-cash" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <select id="nama-cash" required style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; flex: 1; min-width: 200px; font-family: inherit;">
+          <option value="">-- Pilih Nama Mahasiswa --</option>
+          <!-- Opsi nama akan di-generate via JavaScript -->
+        </select>
+        
+        <input type="number" id="nominal-cash" placeholder="Nominal (Cth: 50000)" required style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; flex: 1; min-width: 150px; font-family: inherit;">
+        
+        <button type="submit" id="btn-submit-cash" style="background: #10b981; color: white; border: none; padding: 11px 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          Simpan Data Tunai
+        </button>
+      </form>
+    </div>
+
+    <!-- TABEL UTAMA SETORAN (DENGAN TANGGAL) -->
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>No</th>
+            <th>Tanggal</th> <!-- KOLOM TANGGAL -->
             <th>Nama</th>
             <th>Email</th>
             <th>Terkumpul</th>
@@ -56,9 +77,7 @@
   <section id="admin-rekap" class="hidden" style="padding: 20px; margin-top: 30px;">
     <header style="margin-bottom: 15px;">
       <h2>Rekapitulasi Kas & Pelunasan Seluruh Mahasiswa</h2>
-      <p>Daftar lengkap status pembayaran target Rp 400.000 per anak.</p>
     </header>
-
     <div class="table-wrapper">
       <table>
         <thead>
@@ -78,13 +97,14 @@
 
   <script>
     const admin = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
-    const dXNlcg = atob(admin);
     const loginSection = document.getElementById('login-section');
     const adminDashboard = document.getElementById('admin-dashboard');
     const adminRekap = document.getElementById('admin-rekap');
+    const dXNlcg = atob(admin);
     const loginForm = document.getElementById('login-form');
     const tabelBody = document.getElementById('admin-tabel-body');
     const rekapTabelBody = document.getElementById('admin-rekap-body');
+    const selectNamaCash = document.getElementById('nama-cash');
     
     let savedPassword = '';
     const daftarAbsenKelas = [
@@ -99,7 +119,15 @@
       "Najwa Azzahra", "Shofi Nurjanah", "Kayla Shita Sabila", "Artika", 
       "Fauziyyah Nurzahra", "Hana Zada Videla", "Kaafi Alfath Syahri", "Echa Junika Alawiyah"
     ];
-    const TARGET_PER_ANAK = 400000;
+    const TARGET_PER_ANAK = 400000; // Sesuai target barumu
+
+    // GENERATE DROPDOWN CASH
+    daftarAbsenKelas.forEach(nama => {
+      let option = document.createElement('option');
+      option.value = nama;
+      option.text = nama;
+      selectNamaCash.appendChild(option);
+    });
 
     function showToast(pesan) {
       let existingToast = document.getElementById('custom-toast');
@@ -125,7 +153,7 @@
       document.body.appendChild(overlay);
       document.getElementById('modal-ok-btn').onclick = () => { overlay.remove(); if (callback) callback(); };
     }
-    console.log(dXNlcg);
+    
     function showCustomConfirm(judul, pesan, jenisTombol, callbackYes) {
       let overlay = document.createElement('div');
       overlay.className = 'custom-modal-overlay';
@@ -182,11 +210,46 @@
         });
     });
 
+    // SUBMIT DATA CASH BENDAHARA
+    document.getElementById('form-cash').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nama = selectNamaCash.value;
+      const nominal = document.getElementById('nominal-cash').value;
+      const btn = document.getElementById('btn-submit-cash');
+
+      showCustomConfirm("Simpan Tunai?", `Yakin mencatat tunai Rp ${Number(nominal).toLocaleString('id-ID')} dari ${nama}?`, "primary", () => {
+        btn.innerText = "Menyimpan...";
+        btn.disabled = true;
+
+        let formData = new FormData();
+        formData.append('action', 'addCash'); 
+        formData.append('password', savedPassword);
+        formData.append('nama', nama);
+        formData.append('terkumpul', nominal);
+
+        fetch(dXNlcg, { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(data => {
+            if(data.result === 'success') {
+              showToast("Setoran tunai berhasil dicatat! ✅");
+              document.getElementById('form-cash').reset();
+              loadAdminData(); 
+            } else {
+              showCustomAlert("Gagal", data.message);
+            }
+          })
+          .catch(() => showCustomAlert("Gagal", "Terjadi kesalahan jaringan."))
+          .finally(() => {
+            btn.innerText = "Simpan Data Tunai";
+            btn.disabled = false;
+          });
+      });
+    });
+
     function loadAdminData() {
-      tabelBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Memuat data...</td></tr>';
+      tabelBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Memuat data...</td></tr>';
       if (rekapTabelBody) rekapTabelBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Memuat rekap...</td></tr>';
 
-      // SEKARANG MENGGUNAKAN POST AGAR AMAN DARI HACKER
       let formData = new FormData();
       formData.append('action', 'getAdminData');
       formData.append('password', savedPassword);
@@ -199,16 +262,21 @@
           if (response.result === 'success') {
             let data = response.data;
             if (data.length === 0) {
-              tabelBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Data kosong</td></tr>';
+              tabelBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Data kosong</td></tr>';
             } else {
               data.forEach((baris, index) => {
                 let tr = document.createElement('tr');
                 let terkumpul = parseFloat(baris.terkumpul) || 0;
                 let formatTerkumpul = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(terkumpul);
 
-                let tombolBukti = baris.urlBukti && baris.urlBukti.startsWith('http') ? 
-                  `<a href="${baris.urlBukti}" target="_blank" style="background: #3b82f6; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 3px;"><span class="iconify" data-icon="mdi:eye"></span> Lihat</a>` : 
-                  `<span style="color: gray;">Tidak ada</span>`;
+                let tombolBukti = '';
+                if (baris.urlBukti && baris.urlBukti.startsWith('http')) {
+                  tombolBukti = `<a href="${baris.urlBukti}" target="_blank" style="background: #3b82f6; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 3px;"><span class="iconify" data-icon="mdi:eye"></span> Lihat</a>`;
+                } else if (baris.urlBukti && baris.urlBukti.includes('Tunai')) {
+                  tombolBukti = `<span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">💵 Tunai</span>`;
+                } else {
+                  tombolBukti = `<span style="color: gray; font-size: 0.85rem;">Tidak ada</span>`;
+                }
 
                 let tombolAksi = '';
                 let statusSetoran = baris.status ? baris.status.toLowerCase() : '';
@@ -221,6 +289,7 @@
 
                 tr.innerHTML = `
                   <td>${index + 1}</td>
+                  <td style="font-size: 0.85rem; color: #64748b; white-space: nowrap;">${baris.tanggal}</td>
                   <td><strong>${baris.nama}</strong></td>
                   <td>${baris.email || '-'}</td>
                   <td>${formatTerkumpul}</td>
@@ -233,10 +302,11 @@
             }
             renderTabelRekap(data);
           } else {
-             showCustomAlert("Sesi Habis", "Password tidak valid atau kedaluwarsa. Silakan muat ulang halaman.");
+             showCustomAlert("Sesi Habis", "Password tidak valid. Silakan muat ulang halaman.");
           }
         });
     }
+
     function renderTabelRekap(dataSheets) {
       if (!rekapTabelBody) return;
       rekapTabelBody.innerHTML = '';
@@ -282,8 +352,8 @@
     }
 
     function ubahStatus(nomorBaris, aksi) {
-      let pesanKonfirmasi = aksi === 'acc' ? "Yakin ingin meng-ACC setoran ini? Email notifikasi lunas akan otomatis dikirim ke mahasiswa." : "Yakin ingin menolak setoran ini?";
-      showCustomConfirm("Konfirmasi Aksi", pesanKonfirmasi, aksi === 'acc' ? 'primary' : 'danger', () => {
+      let pesanKonfirmasi = aksi === 'acc' ? "Yakin ingin meng-ACC setoran ini?" : "Yakin ingin menolak setoran ini?";
+      showCustomConfirm("Konfirmasi", pesanKonfirmasi, aksi === 'acc' ? 'primary' : 'danger', () => {
         let formData = new FormData();
         formData.append('action', aksi);
         formData.append('baris', nomorBaris);
@@ -293,12 +363,9 @@
           .then(res => res.json())
           .then(data => {
             if(data.result === 'success') {
-              showToast("Status berhasil diperbarui & Email terkirim!");
+              showToast("Status berhasil diperbarui!");
               loadAdminData(); 
-            } else {
-              showCustomAlert("Gagal", data.message); 
-              loadAdminData();
-            }
+            } else showCustomAlert("Gagal", data.message);
           });
       });
     }
@@ -316,10 +383,7 @@
             if(data.result === 'success') {
               showToast("Data dihapus!");
               loadAdminData(); 
-            } else {
-              showCustomAlert("Gagal", data.message);
-              loadAdminData();
-            }
+            } else showCustomAlert("Gagal", data.message);
           });
       });
     }

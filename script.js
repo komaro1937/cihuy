@@ -80,20 +80,53 @@ form.addEventListener('submit', e => {
 // Jalankan pengambilan total uang saat web pertama dibuka
 document.addEventListener("DOMContentLoaded", loadData);
 
+// =========================================================================
+// 6. FITUR SLIDESHOW & ANIMASI SCROLL (UI/UX)
+// =========================================================================
 let slideIndex = 1;
-showSlides(slideIndex); 
+
+// Fungsi untuk membuat "dot" otomatis sesuai jumlah gambar
+function setupSlideshow() {
+  let slides = document.getElementsByClassName("slide");
+  let dotContainer = document.querySelector(".dot-container"); // Pastikan ada elemen pembungkus dot di HTML
+
+  if (dotContainer && slides.length > 0) {
+    dotContainer.innerHTML = ""; // Bersihkan dot bawaan HTML agar tidak dobel
+    for (let i = 0; i < slides.length; i++) {
+      let dot = document.createElement("span");
+      dot.className = "dot";
+      dot.setAttribute("onclick", `currentSlide(${i + 1})`);
+      dotContainer.appendChild(dot);
+    }
+  }
+  showSlides(slideIndex);
+}
+
 function plusSlides(n) { showSlides(slideIndex += n); }
 function currentSlide(n) { showSlides(slideIndex = n); }
+
 function showSlides(n) {
   let slides = document.getElementsByClassName("slide");
   let dots = document.getElementsByClassName("dot");
+  
+  if (slides.length === 0) return; // Mencegah error jika tidak ada gambar
+
   if (n > slides.length) { slideIndex = 1 }
   if (n < 1) { slideIndex = slides.length }
-  for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
-  for (let i = 0; i < dots.length; i++) dots[i].className = dots[i].className.replace(" active", "");
-  if (slides[slideIndex - 1]) slides[slideIndex - 1].style.display = "block";
+  
+  for (let i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  for (let i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  
+  slides[slideIndex - 1].style.display = "block";
   if (dots[slideIndex - 1]) dots[slideIndex - 1].className += " active";
 }
+
+// Jalankan setup saat web dimuat
+setupSlideshow();
 
 const observer = new IntersectionObserver((entries, observer) => {
   entries.forEach(entry => {
