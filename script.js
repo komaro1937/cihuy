@@ -144,3 +144,17 @@ function salinNoRek() {
     showToast("Gagal menyalin, silakan salin manual ya.");
   });
 }
+
+// Fitur Salin Nomor Rekening Dinamis (Bisa Banyak Rekening)
+function salinNoRek(idElemen) {
+  const noRekElem = document.getElementById(idElemen);
+  
+  if (noRekElem) {
+    const noRek = noRekElem.innerText;
+    navigator.clipboard.writeText(noRek).then(() => {
+      showToast("Nomor rekening berhasil disalin! 📋");
+    }).catch(() => {
+      showToast("Gagal menyalin, silakan salin manual ya.");
+    });
+  }
+}

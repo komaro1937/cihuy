@@ -106,14 +106,46 @@
         <h3 id="total-uang">Rp 0,00</h3>
       </div>
 
-      <!-- KOTAK QR CODE REKENING BENDAHARA -->
-      <div style="background: #f8fafc; border: 2px dashed var(--primary-color); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-        <h4 style="color: var(--primary-color); margin-bottom: 10px;"><span class="iconify" data-icon="mdi:qrcode-scan"></span> Scan QRIS / Rekening Bendahara</h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Silakan scan QR di bawah ini pakai M-Banking / E-Wallet kamu untuk melakukan transfer.</p>
-        <!-- Ganti src dengan link gambar QR Code milik bendahara -->
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=REKENING_ATAU_DANA_BENDAHARA" alt="QR Code Pembayaran" style="max-width: 160px; border-radius: 6px; border: 1px solid var(--border-color); background: white; padding: 6px;">
-        <p style="font-size: 0.85rem; margin-top: 8px; font-weight: 600; color: var(--text-main);">A.N. Bendahara Kelas (BCA / DANA / OVO)</p>
-      </div>
+
+<!-- KOTAK REKENING BENDAHARA (3 PILIHAN) -->
+<div style="background: #f8fafc; border: 2px dashed var(--primary-color); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+  <h4 style="color: var(--primary-color); margin-bottom: 10px;"><span class="iconify" data-icon="mdi:bank-transfer"></span> Transfer Rekening Bendahara</h4>
+  <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Silakan transfer setoran tabungan kamu ke salah satu rekening berikut:</p>
+  
+  <div style="display: flex; flex-direction: column; gap: 15px; max-width: 340px; margin: 0 auto;">
+    
+    <!-- OPSI 1: BSI -->
+    <div style="padding: 15px; background: #ecfdf5; border-radius: 8px; border: 1px solid #a7f3d0;">
+      <p style="font-size: 0.85rem; margin: 0; color: var(--text-main); font-weight: 500;">Bank Syariah Indonesia (BSI)</p>
+      <p id="rek-1" style="font-size: 1.4rem; font-weight: bold; letter-spacing: 1.5px; margin: 8px 0; color: #065f46;">7123456789</p>
+      <p style="font-size: 0.9rem; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">A.N. Silvi Nur Aini</p>
+      <button type="button" onclick="salinNoRek('rek-1')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0 auto;">
+        <span class="iconify" data-icon="mdi:content-copy"></span> Salin No. BSI
+      </button>
+    </div>
+
+    <!-- OPSI 2: BCA -->
+    <div style="padding: 15px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe;">
+      <p style="font-size: 0.85rem; margin: 0; color: var(--text-main); font-weight: 500;">Bank BCA</p>
+      <p id="rek-2" style="font-size: 1.4rem; font-weight: bold; letter-spacing: 1.5px; margin: 8px 0; color: #1e3a8a;">0987654321</p>
+      <p style="font-size: 0.9rem; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">A.N. Silvi Nur Aini</p>
+      <button type="button" onclick="salinNoRek('rek-2')" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0 auto;">
+        <span class="iconify" data-icon="mdi:content-copy"></span> Salin No. BCA
+      </button>
+    </div>
+
+    <!-- OPSI 3: DANA / E-WALLET -->
+    <div style="padding: 15px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+      <p style="font-size: 0.85rem; margin: 0; color: var(--text-main); font-weight: 500;">DANA / E-Wallet</p>
+      <p id="rek-3" style="font-size: 1.4rem; font-weight: bold; letter-spacing: 1.5px; margin: 8px 0; color: #991b1b;">081234567890</p>
+      <p style="font-size: 0.9rem; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">A.N. Silvi Nur Aini</p>
+      <button type="button" onclick="salinNoRek('rek-3')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0 auto;">
+        <span class="iconify" data-icon="mdi:content-copy"></span> Salin No. DANA
+      </button>
+    </div>
+
+  </div>
+</div>
 
       <form name="submit-to-google-sheet">
         <select name="nama" required>
