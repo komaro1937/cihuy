@@ -78,7 +78,7 @@
 
   <script>
     const admin = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
-    const user = atob(admin);
+    const dXNlcg = atob(admin);
     const loginSection = document.getElementById('login-section');
     const adminDashboard = document.getElementById('admin-dashboard');
     const adminRekap = document.getElementById('admin-rekap');
@@ -125,7 +125,7 @@
       document.body.appendChild(overlay);
       document.getElementById('modal-ok-btn').onclick = () => { overlay.remove(); if (callback) callback(); };
     }
-    console.log(user);
+    console.log(dXNlcg);
     function showCustomConfirm(judul, pesan, jenisTombol, callbackYes) {
       let overlay = document.createElement('div');
       overlay.className = 'custom-modal-overlay';
@@ -159,7 +159,7 @@
       formData.append('username', user);
       formData.append('password', pass);
 
-      fetch(user, { method: 'POST', body: formData })
+      fetch(dXNlcg, { method: 'POST', body: formData })
         .then(res => res.json())
         .then(data => {
           if (data.result === 'success') {
