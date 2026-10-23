@@ -191,7 +191,7 @@
       formData.append('action', 'getAdminData');
       formData.append('password', savedPassword);
 
-      fetch(scriptURL, { method: 'POST', body: formData })
+      fetch(dXNlcg, { method: 'POST', body: formData })
         .then(res => res.json())
         .then(response => {
           tabelBody.innerHTML = '';
@@ -289,7 +289,7 @@
         formData.append('baris', nomorBaris);
         formData.append('password', savedPassword); 
 
-        fetch(scriptURL, { method: 'POST', body: formData })
+        fetch(dXNlcg, { method: 'POST', body: formData })
           .then(res => res.json())
           .then(data => {
             if(data.result === 'success') {
@@ -310,7 +310,7 @@
         formData.append('baris', nomorBaris);
         formData.append('password', savedPassword);
 
-        fetch(scriptURL, { method: 'POST', body: formData })
+        fetch(dXNlcg, { method: 'POST', body: formData })
           .then(res => res.json())
           .then(data => {
             if(data.result === 'success') {
