@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liburan Akhir Semester - Kelas Kita!</title>
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="loading.css">
+  <link rel="stylesheet" href="progress.css">
+</head>
+<body>
+
+  <!-- ==========================================
+       BAGIAN 1: HEADER & HERO
+       ========================================== -->
+  <header class="hero scroll-anim">
+    <div class="hero-content">
+      <h1>Healing Akhir Semester Kelas 5B! <span class="iconify" data-icon="mdi:palm-tree"></span></h1>
+      <p>Setelah pusing dihajar tugas dan ujian, saatnya kita refreshing bareng ke Pulau Seribu!</p>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       BAGIAN 2: INFORMASI UTAMA
+       ========================================== -->
+  <section id="informasi" class="scroll-anim">
+    <h2><span class="iconify" data-icon="mdi:map-marker-radius"></span> Detail Destinasi</h2>
+    <ul>
+      <li><strong>Lokasi:</strong> Coming soon!</li>
+      <li><strong>Tanggal:</strong> Coming soon!</li>
+      <li><strong>Titik Kumpul:</strong> Coming soon!</li>
+    </ul>
+  </section>
+
+  <!-- ==========================================
+       BAGIAN 3: GALERI SLIDESHOW VILLA
+       ========================================== -->
+  <section id="galeri" class="scroll-anim">
+    <h2><span class="iconify" data-icon="mdi:camera-image"></span> Penampakan Pulau</h2>
+    
+    <div class="slideshow-container">
+      <div class="slide fade-anim">
+        <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800" alt="Villa Tampak Depan">
+      </div>
+      <div class="slide fade-anim">
+        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800" alt="Kolam Renang">
+      </div>
+      <div class="slide fade-anim">
+        <img src="https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800" alt="Kamar Tidur">
+      </div>
+
+      <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+      <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <div class="dots-container">
+      <span class="dot" onclick="currentSlide(1)"></span>
+      <span class="dot" onclick="currentSlide(2)"></span>
+      <span class="dot" onclick="currentSlide(3)"></span>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       BAGIAN 4: FASILITAS VILLA
+       ========================================== -->
+  <section id="fasilitas" class="scroll-anim">
+    <h2><span class="iconify" data-icon="mdi:home-variant-outline"></span> Fasilitas </h2>
+    <ul>
+      <li><strong> - Makan 3 kali sehari</strong></li>
+      <li><strong> - Snorkeling</strong></li>
+      <li><strong> - BBQ</strong></li>
+      <li><strong> - Sepeda</strong></li>
+    </ul>
+  </section>
+
+  <!-- ==========================================
+       BAGIAN 5: RUNDOWN ACARA
+       ========================================== -->
+  <section id="acara" class="scroll-anim">
+    <h2><span class="iconify" data-icon="mdi:fire"></span> Sekilas Acara</h2>
+    <p>comming soon!</p>
+  </section>
+
+  <hr class="scroll-anim"> 
+
+  <!-- ==========================================
+       BAGIAN 6: TRACKER TABUNGAN & QR CODE
+       ========================================== -->
+  <section id="tabungan" class="scroll-anim">
+    <h2><span class="iconify" data-icon="mdi:wallet-bifold-outline"></span> Yuk Nabung dari Sekarang!</h2>
+    <p>Transfer lewat QR Code di bawah, lalu isi form konfirmasinya ya kawan-kawan.</p>
+
+    <div class="card">
+      <div class="progress-text-wrapper">
+        <span>Target: Rp 15.200.000</span>
+        <span><span id="progress-text">0</span>% Terkumpul</span>
+      </div>
+      <div class="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+
+      <div class="total-banner">
+        <h3>Total Terkumpul:</h3>
+        <h3 id="total-uang">Rp 0,00</h3>
+      </div>
+
+      <!-- KOTAK QR CODE REKENING BENDAHARA -->
+      <div style="background: #f8fafc; border: 2px dashed var(--primary-color); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+        <h4 style="color: var(--primary-color); margin-bottom: 10px;"><span class="iconify" data-icon="mdi:qrcode-scan"></span> Scan QRIS / Rekening Bendahara</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Silakan scan QR di bawah ini pakai M-Banking / E-Wallet kamu untuk melakukan transfer.</p>
+        <!-- Ganti src dengan link gambar QR Code milik bendahara -->
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=REKENING_ATAU_DANA_BENDAHARA" alt="QR Code Pembayaran" style="max-width: 160px; border-radius: 6px; border: 1px solid var(--border-color); background: white; padding: 6px;">
+        <p style="font-size: 0.85rem; margin-top: 8px; font-weight: 600; color: var(--text-main);">A.N. Bendahara Kelas (BCA / DANA / OVO)</p>
+      </div>
+
+      <form name="submit-to-google-sheet">
+        <select name="nama" required>
+            <option value="" disabled selected>-- Pilih Nama Kamu --</option>
+            <option value="Dechri Vanesa Mecca">Dechri Vanesa Mecca</option>
+            <option value="Muhammad Apdal">Muhammad Apdal</option>
+            <option value="Khalifia Inayah">Khalifia Inayah</option>
+            <option value="Nazwa Prina Al Atsilah">Nazwa Prina Al Atsilah</option>
+            <option value="Shevaya Rubyfirlie">Shevaya Rubyfirlie</option>
+            <option value="Adinda Khodijah">Adinda Khodijah</option>
+            <option value="Siti Nasuhah">Siti Nasuhah</option>
+            <option value="Fathi Rakha Herlambang">Fathi Rakha Herlambang</option>
+            <option value="Silvi Nur Aini">Silvi Nur Aini</option>
+            <option value="Sayyida Nafisa Aulia">Sayyida Nafisa Aulia</option>
+            <option value="Tiara Fadilatun Nisa">Tiara Fadilatun Nisa</option>
+            <option value="Cikal Putri Awalia">Cikal Putri Awalia</option>
+            <option value="Nabila Nazwa">Nabila Nazwa</option>
+            <option value="Ira Khairina">Ira Khairina</option>
+            <option value="Nuha Ramadhani">Nuha Ramadhani</option>
+            <option value="Marsha Dwi Della">Marsha Dwi Della</option>
+            <option value="Zihan Nuraeni">Zihan Nuraeni</option>
+            <option value="Nicky Puji Rahayu">Nicky Puji Rahayu</option>
+            <option value="Rizki Fazil (boss)">Rizki Fazil (boss)</option>
+            <option value="Muhammad Ridho Nur Islam">Muhammad Ridho Nur Islam</option>
+            <option value="Ahmad Faaza Fauzan Adzima">Ahmad Faaza Fauzan Adzima</option>
+            <option value="Nur Ahdiayani">Nur Ahdiayani</option>
+            <option value="Ananda Dwi Aryani">Ananda Dwi Aryani</option>
+            <option value="Mutia Zakiyyah">Mutia Zakiyyah</option>
+            <option value="Naila Nur Luna">Naila Nur Luna</option>
+            <option value="Rihadatul Aisy Avicena Anwar">Rihadatul Aisy Avicena Anwar</option>
+            <option value="Fathi Muhammad Rafi">Fathi Muhammad Rafi</option>
+            <option value="Munazi Julita Pratiwi">Munazi Julita Pratiwi</option>
+            <option value="Regard Muhammad Rabbrindran">Regard Muhammad Fauzan Azhiimi">Muhammad Fauzan Azhiimi</option>
+            <option value="Hanan Shofiy Rangkuti">Hanan Shofiy Rangkuti</option>
+            <option value="Najwa Azzahra">Najwa Azzahra</option>
+            <option value="Shofi Nurjanah">Shofi Nurjanah</option>
+            <option value="Kayla Shita Sabila">Kayla Shita Sabila</option>
+            <option value="Artika">Artika</option>
+            <option value="Fauziyyah Nurzahra">Fauziyyah Nurzahra</option>
+            <option value="Hana Zada Videla">Hana Zada Videla</option>
+            <option value="Kaafi Alfath Syahri">Kaafi Alfath Syahri</option>
+            <option value="Echa Junika Alawiyah">Echa Junika Alawiyah</option>
+        </select>
+
+        <!-- INPUT EMAIL MAHASISWA (Untuk Notifikasi Otomatis) -->
+        <input type="email" name="email" placeholder="Email Kamu (Contoh: nama@gmail.com)" required>
+
+        <input type="number" name="terkumpul" placeholder="Jumlah Nominal Transfer (Rp)" required min="1000" style="margin-bottom: 4px;">
+        <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-bottom: var(--space-md); margin-top: 0;">
+            *Ketik angka saja tanpa titik, koma, atau Rp (Contoh: 50000)
+        </small>
+
+        <!-- INPUT UPLOAD BUKTI TRANSFER SCREENSHOT -->
+        <label style="display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; color: var(--text-main);">Upload Bukti Transfer / Screenshot:</label>
+        <input type="file" id="file-bukti" accept="image/*" required style="padding: 10px; background: white;">
+        <input type="hidden" name="fileBase64" id="file-base64">
+        <input type="hidden" name="fileName" id="file-name">
+
+        <button type="submit" style="margin-top: 15px;">
+          <span class="iconify" data-icon="mdi:send-circle-outline"></span> Kirim Konfirmasi Setoran
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Tabungan Villa</title>
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="loading.css">
+  <link rel="stylesheet" href="progress.css">
+  <style>
+    .hidden { display: none !important; }
+    #login-section { max-width: 400px; margin: 100px auto; }
+  </style>
+</head>
+<body>
+
+  <!-- BAGIAN 1: LOGIN -->
+  <section id="login-section">
+    <div class="card" style="text-align: center;">
+      <h2 style="margin-bottom: 20px;"><span class="iconify" data-icon="mdi:shield-account"></span> Login Admin</h2>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" id="btn-login">Masuk Panel Admin</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- BAGIAN 2: DASHBOARD VERIFIKASI -->
+  <section id="admin-dashboard" class="hidden">
+    <header style="padding: 20px; margin-bottom: 20px;">
+      <h2>Panel Bendahara - Verifikasi Setoran</h2>
+      <p>Periksa bukti transfer mahasiswa dan lakukan ACC atau Tolak.</p>
+    </header>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Terkumpul</th>
+            <th>Bukti</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="admin-tabel-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BAGIAN 3: TABEL REKAP 39 SISWA -->
+  <section id="admin-rekap" class="hidden" style="padding: 20px; margin-top: 30px;">
+    <header style="margin-bottom: 15px;">
+      <h2>Rekapitulasi Kas & Pelunasan Seluruh Mahasiswa</h2>
+      <p>Daftar lengkap status pembayaran target Rp 300.000 per anak.</p>
+    </header>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Mahasiswa</th>
+            <th>Total Terkumpul</th>
+            <th>Target</th>
+            <th>Sisa Kekurangan</th>
+            <th>Status Pelunasan</th>
+          </tr>
+        </thead>
+        <tbody id="admin-rekap-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const admin = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
+    const user = atob(admin);
+    const loginSection = document.getElementById('login-section');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const adminRekap = document.getElementById('admin-rekap');
+    const loginForm = document.getElementById('login-form');
+    const tabelBody = document.getElementById('admin-tabel-body');
+    const rekapTabelBody = document.getElementById('admin-rekap-body');
+    
+    let savedPassword = '';
+    const daftarAbsenKelas = [
+      "Dechri Vanesa Mecca", "Muhammad Apdal", "Khalifia Inayah", "Nazwa Prina Al Atsilah", 
+      "Shevaya Rubyfirlie", "Adinda Khodijah", "Siti Nasuhah", "Fathi Rakha Herlambang", 
+      "Silvi Nur Aini", "Sayyida Nafisa Aulia", "Tiara Fadilatun Nisa", "Cikal Putri Awalia", 
+      "Nabila Nazwa", "Ira Khairina", "Nuha Ramadhani", "Marsha Dwi Della", "Zihan Nuraeni", 
+      "Nicky Puji Rahayu", "Rizki Fazil (boss)", "Muhammad Ridho Nur Islam", "Ahmad Faaza Fauzan Adzima", 
+      "Nur Ahdiayani", "Ananda Dwi Aryani", "Mutia Zakiyyah", "Naila Nur Luna", 
+      "Rihadatul Aisy Avicena Anwar", "Fathi Muhammad Rafi", "Munazi Julita Pratiwi", 
+      "Regard Muhammad Rabbrindran", "Muhammad Fauzan Azhiimi", "Hanan Shofiy Rangkuti", 
+      "Najwa Azzahra", "Shofi Nurjanah", "Kayla Shita Sabila", "Artika", 
+      "Fauziyyah Nurzahra", "Hana Zada Videla", "Kaafi Alfath Syahri", "Echa Junika Alawiyah"
+    ];
+    const TARGET_PER_ANAK = 300000;
+
+    function showToast(pesan) {
+      let existingToast = document.getElementById('custom-toast');
+      if (existingToast) existingToast.remove();
+      let toast = document.createElement('div');
+      toast.id = 'custom-toast';
+      toast.innerHTML = `<span class="iconify" data-icon="mdi:check-decagram" style="font-size: 1.3rem;"></span> ${pesan}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 100);
+      setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3500);
+    }
+
+    function showCustomAlert(judul, pesan, callback) {
+      let overlay = document.createElement('div');
+      overlay.className = 'custom-modal-overlay';
+      overlay.innerHTML = `
+        <div class="custom-modal-box">
+          <h3>${judul}</h3>
+          <p>${pesan}</p>
+          <div class="custom-modal-actions"><button class="modal-btn modal-btn-primary" id="modal-ok-btn">Siap, Bos!</button></div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('modal-ok-btn').onclick = () => { overlay.remove(); if (callback) callback(); };
+    }
+    console.log(user);
+    function showCustomConfirm(judul, pesan, jenisTombol, callbackYes) {
+      let overlay = document.createElement('div');
+      overlay.className = 'custom-modal-overlay';
+      let btnClass = jenisTombol === 'danger' ? 'modal-btn-danger' : 'modal-btn-primary';
+      overlay.innerHTML = `
+        <div class="custom-modal-box">
+          <h3>${judul}</h3>
+          <p>${pesan}</p>
+          <div class="custom-modal-actions">
+            <button class="modal-btn modal-btn-secondary" id="modal-no-btn">Batal</button>
+            <button class="modal-btn ${btnClass}" id="modal-yes-btn">Lanjutkan</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('modal-no-btn').onclick = () => overlay.remove();
+      document.getElementById('modal-yes-btn').onclick = () => { overlay.remove(); callbackYes(); };
+    }
+
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      const btnLogin = document.getElementById('btn-login');
+
+      btnLogin.innerText = "Memeriksa...";
+      btnLogin.disabled = true;
+
+      let formData = new FormData();
+      formData.append('action', 'login');
+      formData.append('username', user);
+      formData.append('password', pass);
+
+      fetch(user, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+          if (data.result === 'success') {
+            savedPassword = pass; 
+            loginSection.classList.add('hidden');
+            adminDashboard.classList.remove('hidden');
+            if (adminRekap) adminRekap.classList.remove('hidden'); 
+            loadAdminData(); 
+            showToast("Berhasil Masuk, Halo Bendahara!");
+          } else {
+            showCustomAlert("Akses Ditolak ❌", data.message); 
+            btnLogin.innerText = "Masuk Panel Admin";
+            btnLogin.disabled = false;
+          }
+        })
+        .catch(error => {
+          showCustomAlert("Koneksi Gagal", "Terjadi gangguan jaringan.");
+          btnLogin.innerText = "Masuk Panel Admin";
+          btnLogin.disabled = false;
+        });
+    });
+
+    function loadAdminData() {
+      tabelBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Memuat data...</td></tr>';
+      if (rekapTabelBody) rekapTabelBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Memuat rekap...</td></tr>';
+
+      // SEKARANG MENGGUNAKAN POST AGAR AMAN DARI HACKER
+      let formData = new FormData();
+      formData.append('action', 'getAdminData');
+      formData.append('password', savedPassword);
+
+      fetch(scriptURL, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(response => {
+          tabelBody.innerHTML = '';
+          
+          if (response.result === 'success') {
+            let data = response.data;
+            if (data.length === 0) {
+              tabelBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Data kosong</td></tr>';
+            } else {
+              data.forEach((baris, index) => {
+                let tr = document.createElement('tr');
+                let terkumpul = parseFloat(baris.terkumpul) || 0;
+                let formatTerkumpul = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(terkumpul);
+
+                let tombolBukti = baris.urlBukti && baris.urlBukti.startsWith('http') ? 
+                  `<a href="${baris.urlBukti}" target="_blank" style="background: #3b82f6; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 3px;"><span class="iconify" data-icon="mdi:eye"></span> Lihat</a>` : 
+                  `<span style="color: gray;">Tidak ada</span>`;
+
+                let tombolAksi = '';
+                let statusSetoran = baris.status ? baris.status.toLowerCase() : '';
+                
+                if (!statusSetoran.includes('lunas')) {
+                  tombolAksi += `<button onclick="ubahStatus(${baris.baris}, 'acc')" style="background-color: #10b981; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 4px;">ACC</button>`;
+                }
+                tombolAksi += `<button onclick="ubahStatus(${baris.baris}, 'tolak')" style="background-color: #f59e0b; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 4px;">Tolak</button>`;
+                tombolAksi += `<button onclick="hapusData(${baris.baris})" style="background-color: #ef4444; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">Hapus</button>`;
+
+                tr.innerHTML = `
+                  <td>${index + 1}</td>
+                  <td><strong>${baris.nama}</strong></td>
+                  <td>${baris.email || '-'}</td>
+                  <td>${formatTerkumpul}</td>
+                  <td>${tombolBukti}</td>
+                  <td>${baris.status}</td>
+                  <td><div style="display: flex;">${tombolAksi}</div></td>
+                `;
+                tabelBody.appendChild(tr);
+              });
+            }
+            renderTabelRekap(data);
+          } else {
+             showCustomAlert("Sesi Habis", "Password tidak valid atau kedaluwarsa. Silakan muat ulang halaman.");
+          }
+        });
+    }
+    function renderTabelRekap(dataSheets) {
+      if (!rekapTabelBody) return;
+      rekapTabelBody.innerHTML = '';
+      let petaSetoran = {};
+      dataSheets.forEach(row => {
+        let status = row.status ? row.status.toLowerCase() : '';
+        if (status.includes('lunas') || status.includes('valid')) {
+          let nama = row.nama.trim();
+          let jumlah = parseFloat(row.terkumpul) || 0;
+          petaSetoran[nama] = (petaSetoran[nama] || 0) + jumlah;
+        }
+      });
+
+      daftarAbsenKelas.forEach((namaSiswa, index) => {
+        let terkumpulSiswa = petaSetoran[namaSiswa] || 0;
+        let sisaKurang = TARGET_PER_ANAK - terkumpulSiswa;
+        if (sisaKurang < 0) sisaKurang = 0;
+
+        let formatTerkumpul = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(terkumpulSiswa);
+        let formatSisa = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(sisaKurang);
+
+        let tr = document.createElement('tr');
+        let statusBadge = '';
+        if (terkumpulSiswa >= TARGET_PER_ANAK) {
+          statusBadge = `<span style="color: #10b981; font-weight: bold;">Lunas 🎉</span>`;
+          tr.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+        } else if (terkumpulSiswa > 0) {
+          statusBadge = `<span style="color: #f59e0b; font-weight: 500;">Cicil</span>`;
+        } else {
+          statusBadge = `<span style="color: #ef4444; font-weight: 500;">Belum</span>`;
+        }
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td><strong>${namaSiswa}</strong></td>
+          <td>${formatTerkumpul}</td>
+          <td>Rp 300.000</td>
+          <td>${formatSisa}</td>
+          <td>${statusBadge}</td>
+        `;
+        rekapTabelBody.appendChild(tr);
+      });
+    }
+
+    function ubahStatus(nomorBaris, aksi) {
+      let pesanKonfirmasi = aksi === 'acc' ? "Yakin ingin meng-ACC setoran ini? Email notifikasi lunas akan otomatis dikirim ke mahasiswa." : "Yakin ingin menolak setoran ini?";
+      showCustomConfirm("Konfirmasi Aksi", pesanKonfirmasi, aksi === 'acc' ? 'primary' : 'danger', () => {
+        let formData = new FormData();
+        formData.append('action', aksi);
+        formData.append('baris', nomorBaris);
+        formData.append('password', savedPassword); 
+
+        fetch(scriptURL, { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(data => {
+            if(data.result === 'success') {
+              showToast("Status berhasil diperbarui & Email terkirim!");
+              loadAdminData(); 
+            } else {
+              showCustomAlert("Gagal", data.message); 
+              loadAdminData();
+            }
+          });
+      });
+    }
+
+    function hapusData(nomorBaris) {
+      showCustomConfirm("Hapus Data? ⚠️", "Data setoran ini akan dihapus permanen.", "danger", () => {
+        let formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('baris', nomorBaris);
+        formData.append('password', savedPassword);
+
+        fetch(scriptURL, { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(data => {
+            if(data.result === 'success') {
+              showToast("Data dihapus!");
+              loadAdminData(); 
+            } else {
+              showCustomAlert("Gagal", data.message);
+              loadAdminData();
+            }
+          });
+      });
+    }
+  </script>
+</body>
+</html>
