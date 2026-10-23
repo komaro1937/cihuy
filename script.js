@@ -1,27 +1,14 @@
+const _sysToken = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
+const _endpointX = atob(_sysToken); 
 const form = document.forms['submit-to-google-sheet'];
 const elemenTotalUang = document.getElementById('total-uang');
-const admin = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5TGs5ZkJzdm9MYlM3OTZ2T3E3RTg1YmdDWWVaQzVpYzd4ZUtSLTU0VVBlZ3lRNTM4SE5kbkFJUDdHOG9NaFV0SFB0Zy9leGVj";
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
-const dXNlcg = atob(admin);
 const inputfile = document.getElementById('file-bukti');
+
+// Target Kelas (Rp 15.200.000)
 const targetBiaya = 15200000; 
-const TARGET_PER_ANAK = 400000;
 
-const daftarAbsenKelas = [
-  "Dechri Vanesa Mecca", "Muhammad Apdal", "Khalifia Inayah", "Nazwa Prina Al Atsilah", 
-  "Shevaya Rubyfirlie", "Adinda Khodijah", "Siti Nasuhah", "Fathi Rakha Herlambang", 
-  "Silvi Nur Aini", "Sayyida Nafisa Aulia", "Tiara Fadilatun Nisa", "Cikal Putri Awalia", 
-  "Nabila Nazwa", "Ira Khairina", "Nuha Ramadhani", "Marsha Dwi Della", "Zihan Nuraeni", 
-  "Nicky Puji Rahayu", "Rizki Fazil (boss)", "Muhammad Ridho Nur Islam", "Ahmad Faaza Fauzan Adzima", 
-  "Nur Ahdiayani", "Ananda Dwi Aryani", "Mutia Zakiyyah", "Naila Nur Luna", 
-  "Rihadatul Aisy Avicena Anwar", "Fathi Muhammad Rafi", "Munazi Julita Pratiwi", 
-  "Regard Muhammad Rabbrindran", "Muhammad Fauzan Azhiimi", "Hanan Shofiy Rangkuti", 
-  "Najwa Azzahra", "Shofi Nurjanah", "Kayla Shita Sabila", "Artika", 
-  "Fauziyyah Nurzahra", "Hana Zada Videla", "Kaafi Alfath Syahri", "Echa Junika Alawiyah"
-];
-
-// Konversi File Gambar ke Base64 saat di-upload
 inputfile.addEventListener('change', function(e) {
   let file = e.target.files[0];
   if (file) {
@@ -34,28 +21,17 @@ inputfile.addEventListener('change', function(e) {
   }
 });
 
-
-// FUNGSI UNTUK MENGAMBIL DAN MENAMPILKAN TOTAL KAS KELAS (GET)
 function loadData() {
   elemenTotalUang.innerText = 'Menghitung...'; 
   progressBar.style.width = '0%';
   progressText.innerText = '0';
 
-  fetch(scriptURL)
+  fetch(_endpointX)
     .then(response => response.json())
     .then(data => {
-      let totalKeseluruhan = 0; 
+      // Mengambil data 'totalTerkumpul' yang dikirim dari Backend GAS
+      let totalKeseluruhan = parseFloat(data.totalTerkumpul) || 0; 
 
-      data.forEach((baris) => {
-        let nominalUang = parseFloat(baris.terkumpul) || 0;
-        let statusSetoran = baris.status ? baris.status.toLowerCase() : '';
-        // Hanya menghitung uang dari data yang statusnya sudah Lunas / Valid
-        if (statusSetoran.includes('lunas') || statusSetoran.includes('valid')) {
-          totalKeseluruhan += nominalUang; 
-        }
-      });
-
-      // Update Total & Progress Bar Utama Target Kelas (Rp 15.200.000)
       elemenTotalUang.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalKeseluruhan);
 
       let persentase = (totalKeseluruhan / targetBiaya) * 100;
@@ -64,56 +40,11 @@ function loadData() {
       progressText.innerText = persentase.toFixed(1);
     })
     .catch(error => {
-      console.error('Error!', error.message);
+      console.error('Error memuat total kas:', error.message);
       elemenTotalUang.innerText = 'Gagal memuat data';
     });
 }
-console.log(dXNlcg);
-function renderProgresIndividu(dataSheets) {
-  const container = document.getElementById('container-progres-siswa');
-  if (!container) return;
-  
-  container.innerHTML = '';
-  let petaSetoran = {};
-  dataSheets.forEach(row => {
-    let status = row.status ? row.status.toLowerCase() : '';
-    if (status.includes('lunas') || status.includes('valid')) {
-      let nama = row.nama.trim();
-      let jumlah = parseFloat(row.terkumpul) || 0;
-      petaSetoran[nama] = (petaSetoran[nama] || 0) + jumlah;
-    }
-  });
 
-  daftarAbsenKelas.forEach(namaSiswa => {
-    let terkumpulSiswa = petaSetoran[namaSiswa] || 0;
-    let persentase = (terkumpulSiswa / TARGET_PER_ANAK) * 100;
-    if (persentase > 100) persentase = 100;
-
-    let formatTerkumpul = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(terkumpulSiswa);
-    let badgeStatus = terkumpulSiswa >= TARGET_PER_ANAK ? 
-      `<span style="color: #10b981; font-weight: bold; font-size: 0.8rem;">Lunas 🎉</span>` : 
-      `<span style="color: var(--text-muted); font-size: 0.8rem;">${persentase.toFixed(0)}%</span>`;
-    fetch(dXNlcg, { method: 'POST', body: formData })
-    let kartu = document.createElement('div');
-    kartu.className = 'kartu-progres-siswa';
-    kartu.innerHTML = `
-      <div class="kartu-header">
-        <h4>${namaSiswa}</h4>
-        ${badgeStatus}
-      </div>
-      <div class="mini-progress-container">
-        <div class="mini-progress-bar" style="width: ${persentase}%;"></div>
-      </div>
-      <div class="kartu-footer">
-        <span>${formatTerkumpul}</span>
-        <span>Target: Rp 400k</span>
-      </div>
-    `;
-    container.appendChild(kartu);
-  });
-}
-
-// FUNGSI SUBMIT FORM MAHASISWA
 form.addEventListener('submit', e => {
   e.preventDefault(); 
   let requestBody = new FormData(form);
@@ -122,30 +53,35 @@ form.addEventListener('submit', e => {
   submitButton.innerText = "Mengirim Bukti & Data...";
   submitButton.disabled = true;
 
-  fetch(scriptURL, { method: 'POST', body: requestBody })
+  fetch(_endpointX, { method: 'POST', body: requestBody })
     .then(res => res.json())
     .then(data => {
-      showCustomAlert(
-        "Konfirmasi Berhasil Dikirim! 🎉", 
-        "Bukti transfer kamu sudah masuk ke sistem bendahara. Mohon tunggu verifikasi selanjutnya ya!"
-      );
-      showToast("Data & Bukti terkirim!");
-      form.reset(); 
-      submitButton.innerText = "Kirim Konfirmasi Setoran";
-      submitButton.disabled = false;
-      loadData(); 
+      if (data.result === 'success') {
+        showCustomAlert(
+          "Konfirmasi Berhasil Dikirim! 🎉", 
+          "Bukti transfer kamu sudah masuk ke sistem bendahara. Mohon tunggu verifikasi selanjutnya ya!"
+        );
+        showToast("Data & Bukti terkirim!");
+        form.reset(); 
+        loadData(); 
+      } else {
+        // Tampilkan pesan penolakan dari sistem anti-spam Backend
+        showCustomAlert("Gagal Dikirim ⚠️", data.message);
+      }
     })
     .catch(error => {
-      console.error('Error!', error.message);
+      console.error('Error saat submit:', error.message);
       showCustomAlert("Waduh, Gagal Kirim! 😢", "Koneksi internet bermasalah. Coba ulangi beberapa saat lagi.");
+    })
+    .finally(() => {
       submitButton.innerText = "Kirim Konfirmasi Setoran";
       submitButton.disabled = false;
     });
 });
 
+// Jalankan pengambilan total uang saat web pertama dibuka
 document.addEventListener("DOMContentLoaded", loadData);
 
-// SLIDESHOW & SCROLL ANIMATION
 let slideIndex = 1;
 showSlides(slideIndex); 
 function plusSlides(n) { showSlides(slideIndex += n); }
@@ -157,8 +93,8 @@ function showSlides(n) {
   if (n < 1) { slideIndex = slides.length }
   for (let i = 0; i < slides.length; i++) slides[i].style.display = "none";
   for (let i = 0; i < dots.length; i++) dots[i].className = dots[i].className.replace(" active", "");
-  slides[slideIndex - 1].style.display = "block";
-  dots[slideIndex - 1].className += " active";
+  if (slides[slideIndex - 1]) slides[slideIndex - 1].style.display = "block";
+  if (dots[slideIndex - 1]) dots[slideIndex - 1].className += " active";
 }
 
 const observer = new IntersectionObserver((entries, observer) => {
@@ -172,7 +108,6 @@ const observer = new IntersectionObserver((entries, observer) => {
 
 document.querySelectorAll('.scroll-anim').forEach((el) => observer.observe(el));
 
-// MODAL & TOAST
 function showToast(pesan) {
   let existingToast = document.getElementById('custom-toast');
   if (existingToast) existingToast.remove();
@@ -198,4 +133,16 @@ function showCustomAlert(judul, pesan, callback) {
   `;
   document.body.appendChild(overlay);
   document.getElementById('modal-ok-btn').onclick = () => { overlay.remove(); if (callback) callback(); };
+}
+
+// Fitur Salin Nomor Rekening Bendahara
+function salinNoRek() {
+  const noRekElem = document.getElementById('no-rek-bsi');
+  // Akan membaca nomor dari HTML, atau fallback ke 7123456789 jika ID tidak ditemukan
+  const noRek = noRekElem ? noRekElem.innerText : "7123456789"; 
+  navigator.clipboard.writeText(noRek).then(() => {
+    showToast("Nomor rekening berhasil disalin! 📋");
+  }).catch(() => {
+    showToast("Gagal menyalin, silakan salin manual ya.");
+  });
 }
